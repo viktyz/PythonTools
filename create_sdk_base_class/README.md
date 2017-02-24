@@ -1,1 +1,14 @@
-# A python script which use to create base classes for user-defined Objective-C SDK
+### 名称
+
+create_sdk_base_class.py
+
+### 功能
+
+用于为工程创建自定义 SDK 基类库
+
+### 简介
+
+* 首先遍历 Xcode 对应目中下系统 SDK，获取全部系统 SDK 类定义信息；
+* 再遍历工程目录下代码，获取工程类定义信息；
+* 将工程中直接继承自系统 SDK 基类的类信息获取出来；
+* 针对已获取类列表，生成指定前缀和目录分组的自定义 SDK 基类库。
