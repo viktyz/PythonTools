@@ -4,7 +4,7 @@ create_sdk_base_class.py
 
 ### 功能
 
-用于为工程创建自定义 SDK 基类库
+* 用于为工程创建自定义 SDK 基类库
 
 ### 介绍
 
@@ -26,4 +26,4 @@ $ python create_sdk_base_class.py -p AFL
 -f <optional : sdk folder path, default is current folder>
 ```
 
-![create_sdk_base_class](create_sdk_base_class.png)
+![create_sdk_base_class](Resource/create_sdk_base_class.png)
