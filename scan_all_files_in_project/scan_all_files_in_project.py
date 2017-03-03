@@ -95,7 +95,7 @@ def main(argv):
         print(
             'usage: \n'
             '\n'
-            '$ python scan_all_files_in_project.py\n'
+            '$ python scan_all_files_in_project.py -i project_path\n'
             '\n'
             '-i <optional : input project path, default is current folder>\n'
         )
@@ -108,7 +108,7 @@ def main(argv):
             print(
             'usage: \n'
             '\n'
-            '$ python scan_all_files_in_project.py\n'
+            '$ python scan_all_files_in_project.py -i project_path\n'
             '\n'
             '-i <optional : input project path, default is current folder>\n'
         )

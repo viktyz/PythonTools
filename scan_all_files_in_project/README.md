@@ -22,7 +22,7 @@ scan_all_files_in_project.py
 ```shell
 usage:
 
-$ python scan_all_files_in_project.py
+$ python scan_all_files_in_project.py -i project_path
 
 -i <optional : input project path, default is current folder>
 ```
