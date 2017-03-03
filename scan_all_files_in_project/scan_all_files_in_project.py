@@ -86,6 +86,7 @@ def group_file_by_extension(root, item):
             list.append(itemInfo)
             adict['none_extension'] = list
 
+
 # 主函数
 def main(argv):
     try:
@@ -106,12 +107,12 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-h':
             print(
-            'usage: \n'
-            '\n'
-            '$ python scan_all_files_in_project.py -i project_path\n'
-            '\n'
-            '-i <optional : input project path, default is current folder>\n'
-        )
+                'usage: \n'
+                '\n'
+                '$ python scan_all_files_in_project.py -i project_path\n'
+                '\n'
+                '-i <optional : input project path, default is current folder>\n'
+            )
             sys.exit()
         elif opt == '-i':
             project_path = arg
@@ -129,6 +130,7 @@ def main(argv):
         print(item + ' : ' + str(len(adict[item])))
 
     print('\nTOTAL : ' + str(icount))
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
