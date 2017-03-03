@@ -24,4 +24,3 @@ $ python scan_all_files_in_project.py -i project_path
 ```
 
 ![scan_class_name](Resource/scan_class_name.png)
-![scan_class_name](Resource/scan_class_name.png)
