@@ -101,6 +101,7 @@ class DFA:
     def start_convert(self):
 
         self.remove_comment()
+        self.remove_line_break()
         self.remove_duplicate_space()
 
         lines = self.content.split('\n')
@@ -257,17 +258,15 @@ class DFA:
 
     def remove_duplicate_space(self):
 
-        self.content = re.sub('\n+', '\n', self.content)
-
-        self.content = re.sub('\n +', '\n', self.content)
-
-        self.content = re.sub(' +\n', '\n', self.content)
-
         self.content = re.sub(' +', ' ', self.content)
 
     def remove_comment(self):
 
         self.content = re.sub("(/\*(\s|.)*?\*/)|(//.*)", "", self.content)
+
+    def remove_line_break(self):
+
+        self.content = re.sub("\n", " ", self.content)
 
 
 if __name__ == '__main__':
