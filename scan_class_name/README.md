@@ -1,6 +1,6 @@
 ### 名称
 
-scan_class_name.py
+* scan_class_name.py
 
 ### 功能
 
