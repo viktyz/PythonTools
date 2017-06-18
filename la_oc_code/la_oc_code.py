@@ -3,7 +3,10 @@
 
 # Created by Alfred Jiang 2017-06-17
 
+import getopt
 import re
+import sys
+
 from enum import Enum
 
 
@@ -91,11 +94,45 @@ class DFA:
         self.content = re.sub("\n", " ", self.content)
 
 
-if __name__ == '__main__':
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv, 'h:p:',
+                                   ['path='])
+    except getopt.GetoptError:
+        print(
+            'usage: \n'
+            '\n'
+            '$ python la_oc_code.py -p file_path\n'
+            '\n'
+            '-p <optional : input file path>\n'
+        )
+        sys.exit(2)
 
-    dfa = DFA("/Users/viktyz/Documents/Git/PythonTools/AFNetworking/AFHTTPSessionManager.h")
+    for opt, arg in opts:
+        if opt == '-h':
+            print(
+                'usage: \n'
+                '\n'
+                '$ python la_oc_code.py -p file_path\n'
+                '\n'
+                '-p <optional : input file path>\n'
+            )
+            sys.exit()
+        elif opt == '-p':
+            project_path = arg
+
+    print('\n===========================\n')
+
+    dfa = DFA(project_path)
+
     dfa.start_convert()
 
     content = dfa.get_char()
     for item in content:
         print(item)
+
+    print('\n')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
