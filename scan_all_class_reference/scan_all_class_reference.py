@@ -56,6 +56,18 @@ def get_h_file_from_dir(dir, callback):
     return all_h_files
 
 
+def operation_with_list(t_list):
+
+    # i = 0
+    # while i < len(t_list):
+    #     i += 1
+    #     item = t_list[i]
+    #     if  item[1] == 'import':
+    #
+    #         if i > 1 and t_list[(i-1)]
+
+
+
 def operation_with_h_file(filepath, p_path, h_name):
     '''
 
@@ -67,7 +79,6 @@ def operation_with_h_file(filepath, p_path, h_name):
     m_name = os.path.splitext(h_name)[0] + '.m'
     m_filepath = os.path.join(p_path, m_name)
 
-    clist = []
     t_list = []
 
     if os.path.exists(m_filepath):
@@ -79,10 +90,7 @@ def operation_with_h_file(filepath, p_path, h_name):
     h_dfa.start_convert()
     t_list.extend(h_dfa.get_char())
 
-    for item in t_list:
-        print(item)
-
-    return clist
+    operation_with_list(t_list)
 
 
 def main(argv):
