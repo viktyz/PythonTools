@@ -55,7 +55,7 @@ class DFA:
                 string = ch
 
                 if special(ch):
-                    t_info = '(特殊符号,' + string + ')'
+                    t_info = ('特殊符号', string)
                     self.char_message.append(t_info)
                 else:
                     self.state = self.c_state.not_special_char.value
@@ -73,12 +73,12 @@ class DFA:
                         break
 
                 if len(string) != 0:
-                    t_info = '(字符串,' + string + ')'
+                    t_info = ('字符串', string)
                     self.char_message.append(t_info)
                     string = ''
 
                 if special(ch):
-                    t_info = '(特殊符号,' + ch + ')'
+                    t_info = ('特殊符号', ch)
                     self.char_message.append(t_info)
 
     def get_char(self):  # 获取识别信息

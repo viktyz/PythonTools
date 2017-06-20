@@ -5,92 +5,130 @@
 
 import getopt
 import os
-import re
 import sys
+from enum import Enum
 
 sys.path.append("..")
 from la_oc_code.la_oc_code import DFA
 
 
-def sub_strings_with_pattern(content, pattern, callback):
-    '''
-    获取满足某正则表达式全部结果
-    :param content: 被查询的内容
-    :param pattern: 查询规则
-    :param callback: 指定回调函数
-    :return: 满足条件的全部内容
-    '''
-    findallitems = re.findall(pattern, content)
+class SectionStates(Enum):
+    undefined_section = 0  # 未定义区域
+    interface_section = 1  # interface 区域
+    implement_section = 2  # implement 区域
 
-    if (findallitems):
-
-        for eachItem in findallitems:
-            callback(eachItem.strip())
-
-    return findallitems
+    state_at = 3
+    state_end = 4
 
 
-def get_h_file_from_dir(dir, callback):
-    '''
+class OCClass:
+    root_dir = ''
+    c_state = SectionStates
+    class_list = []  # 所有疑似 class 列表
 
-    获取全部 .h 文件
-    :param dir: 指定路径
-    :param callback: 指定回调函数
-    :return: 返回包含全部 .h 路径的数组
-    '''
-    all_h_files = []
+    def __init__(self, directory):
 
-    for root, dirs, files in os.walk(dir):
+        self.root_dir = directory
 
-        for item in files:
+    def start_scan(self):
 
-            filepath = os.path.join(root, item)
+        self.filter_h_file_from_dir(self.root_dir)
 
-            extension = os.path.splitext(filepath)[1][1:]
+    def filter_h_file_from_dir(self, directory):
+        '''
 
-            if extension == 'h':
-                all_h_files.append(filepath)
+        获取全部 .h 文件
+        :param dir: 指定路径
+        :param callback: 指定回调函数
+        :return: 返回包含全部 .h 路径的数组
+        '''
+        all_h_files = []
 
-                callback(filepath, root, item)
+        for root, dirs, files in os.walk(directory):
 
-    return all_h_files
+            for item in files:
+
+                filepath = os.path.join(root, item)
+
+                extension = os.path.splitext(filepath)[1][1:]
+
+                if extension == 'h':
+                    all_h_files.append(filepath)
+
+                    self.operation_with_h_file(filepath, root, item)
+
+        return all_h_files
+
+    def operation_with_list(self, t_list):
+
+        # 找出所有疑似类
+
+        state = self.c_state.undefined_section.value
+        i = 0
 
 
-def operation_with_list(t_list):
+        while i < len(t_list):
 
-    # i = 0
-    # while i < len(t_list):
-    #     i += 1
-    #     item = t_list[i]
-    #     if  item[1] == 'import':
-    #
-    #         if i > 1 and t_list[(i-1)]
+            item = t_list[i]
+            ch = str(item[1])
+            i += 1
+
+            if state == self.c_state.undefined_section.value:
+
+                if ch == '@':
+
+                    state = self.c_state.state_at.value
+
+            elif state == self.c_state.state_at.value:
+
+                if ch == 'interface':
+
+                    state = self.c_state.interface_section.value
+
+                elif ch == 'implementation':
+
+                    state = self.c_state.implement_section.value
+
+                # elif ch == 'end':
+                #
+                #     state = self.c_state.state_end.value
+
+                else:
+
+                    state = self.c_state.undefined_section
+
+            elif state == self.c_state.interface_section.value or state == self.c_state.implement_section.value:
+
+                if ch[0].isupper():
+                    self.class_list.append(item)
 
 
+    def operation_with_h_file(self, filepath, p_path, h_name):
+        '''
 
-def operation_with_h_file(filepath, p_path, h_name):
-    '''
+        获取全部 class 名
+        :param filepath: .h 文件路径
+        :return: 返回包含全部 class 名的数组
+        '''
 
-    获取全部 class 名
-    :param filepath: .h 文件路径
-    :return: 返回包含全部 class 名的数组
-    '''
+        m_name = os.path.splitext(h_name)[0] + '.m'
+        m_filepath = os.path.join(p_path, m_name)
 
-    m_name = os.path.splitext(h_name)[0] + '.m'
-    m_filepath = os.path.join(p_path, m_name)
+        t_list = []
 
-    t_list = []
+        if os.path.exists(m_filepath):
+            m_dfa = DFA(m_filepath)
+            m_dfa.start_convert()
+            t_list = m_dfa.get_char()
 
-    if os.path.exists(m_filepath):
-        m_dfa = DFA(m_filepath)
-        m_dfa.start_convert()
-        t_list = m_dfa.get_char()
+        h_dfa = DFA(filepath)
+        h_dfa.start_convert()
+        t_list.extend(h_dfa.get_char())
 
-    h_dfa = DFA(filepath)
-    h_dfa.start_convert()
-    t_list.extend(h_dfa.get_char())
+        self.operation_with_list(t_list)
 
-    operation_with_list(t_list)
+    def get_class_list(self):  # 获取识别信息
+        return self.class_list
 
 
 def main(argv):
@@ -122,9 +160,15 @@ def main(argv):
         elif opt == '-i':
             project_path = arg
 
-    print('\n===========================\n')
+    print('\n============== 疑似引用类 ==============\n')
 
-    all_h_files = get_h_file_from_dir(project_path, operation_with_h_file)
+    oc_class = OCClass(project_path)
+
+    oc_class.start_scan()
+
+    content = oc_class.get_class_list()
+    for item in content:
+        print(item)
 
     print('\n===========================\n')
 
