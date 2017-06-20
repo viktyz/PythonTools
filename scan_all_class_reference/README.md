@@ -9,7 +9,7 @@
 ### 介绍
 
 * 遍历对应目录中下全部 .h .m 文件；
-* 识别主类以及该主类所引用全部外部类；
+* 识别 interface 与 implement 中；
 * 输出 output 结果文件，该文件夹下包含 class_reference.json 与 class_reference.index 两个文件，以便提供不同查阅方法。
 
 ```javascript

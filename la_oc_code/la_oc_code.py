@@ -26,19 +26,26 @@ class DFA:
     content = ''  # 文件内容
     c_state = States
     state = 0  # 状态
+    file_path = ''
 
     char_message = []  # 识别的字符串,存储元组,元组第一个参数是类型,第二个参数是该字符串
 
     def __init__(self, file):
 
-        file_object = open(file)
-        self.content = file_object.read()
-        file_object.close()
-
+        self.file_path = file;
         self.state = self.c_state.origin.value
         self.char_message = []
 
     def start_convert(self):
+        try:
+            file_object = open(self.file_path, 'r')
+            self.content = file_object.read()
+            print('Scanning : ' + self.file_path)
+        except:
+            print('Failed to Read File (Please check encoding): ' + self.file_path)
+            return
+        finally:
+            file_object.close()
 
         self.remove_comment()
         self.remove_line_break()
@@ -55,8 +62,10 @@ class DFA:
                 string = ch
 
                 if special(ch):
+
                     t_info = ('特殊符号', string)
                     self.char_message.append(t_info)
+                    string = ''
                 else:
                     self.state = self.c_state.not_special_char.value
                     string = ''
@@ -77,9 +86,9 @@ class DFA:
                     self.char_message.append(t_info)
                     string = ''
 
-                if special(ch):
-                    t_info = ('特殊符号', ch)
-                    self.char_message.append(t_info)
+                if i != content_length:
+                    self.state = self.c_state.origin.value
+                    i -= 1
 
     def get_char(self):  # 获取识别信息
         return self.char_message
