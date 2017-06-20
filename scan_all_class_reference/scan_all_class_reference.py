@@ -14,6 +14,11 @@ from la_oc_code.la_oc_code import DFA
 OC_KEYWORDS = ['YES', 'NO', 'BOOL', 'TRUE', 'FALSE', 'NULL', 'IBOutlet']
 OC_SDK_PREFIX = ['NS', 'UI', 'CF', 'CG', 'AL', 'PH', 'CV', 'CT', 'CA', 'AB', 'CA', 'MK', 'CL', 'AV', 'CC', 'CD']
 
+PRE_IGNORE_LIST = ['"', ')', ':', '^', '.']
+PRE_2_IGNORE_LIST = ['define', 'protocol']
+NEXT_IGNORE_LIST = [']', ':', '(', ')', '.', ';', ',']
+NEXT_2_IGNORE_LIST = ['=', ':', '&', '|']
+
 
 # TEST_PREFIX = ['JD', 'MA', 'QQ', 'DD', 'FM', 'CJ', 'SD', 'AD', 'AF', 'AN', 'CH','SB','SH','SV']
 
@@ -21,9 +26,10 @@ class SectionStates(Enum):
     undefined_section = 0  # 未定义区域
     interface_section = 1  # interface 区域
     implement_section = 2  # implement 区域
+    property_section = 3  # property 区域
 
-    state_at = 3
-    state_end = 4
+    state_at = 100
+    state_end = 101
 
 
 class OCClass:
@@ -31,6 +37,7 @@ class OCClass:
     c_state = SectionStates
     class_list = []  # 所有疑似 class 列表
     class_info = {}  # 所有疑似 class 信息
+    class_need_check = []
 
     def __init__(self, directory):
 
@@ -87,11 +94,15 @@ class OCClass:
 
                     state = self.c_state.implement_section.value
 
+                elif ch == 'property':
+
+                    state = self.c_state.property_section.value
+
                 else:
 
-                    state = self.c_state.undefined_section
+                    state = self.c_state.undefined_section.value
 
-            elif state == self.c_state.interface_section.value or state == self.c_state.implement_section.value:
+            elif state == self.c_state.property_section.value:
 
                 pre_ch = ''
                 pre_2_ch = ''
@@ -116,26 +127,139 @@ class OCClass:
 
                 prefix = ch[0:2]
 
-                if prefix.isupper() \
-                        and prefix not in OC_SDK_PREFIX \
-                        and ch[0].isalpha() \
-                        and ch not in OC_KEYWORDS \
-                        and not ch.isupper() \
-                        and next_ch != ']' \
-                        and next_ch != ':' \
-                        and next_ch != '(' \
-                        and next_ch != ')' \
-                        and next_ch != '.' \
-                        and next_ch != ';' \
-                        and next_ch != ',' \
-                        and next_2_ch != '=' \
-                        and next_2_ch != ':' \
-                        and next_2_ch != '&' \
-                        and next_2_ch != '|' \
-                        and pre_ch == ' ' \
-                        and pre_2_ch != 'define' \
-                        and pre_2_ch != 'protocol':
-                    self.update_class_info(item)
+                if ch == 'interface' and pre_ch == '@':
+
+                    state = self.c_state.interface_section.value
+
+                    i -= 2
+
+                elif ch == 'implementation' and pre_ch == '@':
+
+                    state = self.c_state.implement_section.value
+
+                    i -= 2
+
+                elif ch == 'end' and pre_ch == '@':
+
+                    state = self.c_state.undefined_section.value
+
+                    i -= 1
+
+                else:
+                    if prefix.isupper() \
+                            and ch[0].isalpha() \
+                            and not ch.isupper() \
+                            and prefix not in OC_SDK_PREFIX \
+                            and ch not in OC_KEYWORDS \
+                            and next_ch not in NEXT_IGNORE_LIST \
+                            and next_2_ch not in NEXT_2_IGNORE_LIST \
+                            and pre_ch not in PRE_IGNORE_LIST \
+                            and pre_2_ch not in PRE_2_IGNORE_LIST:
+                        self.update_class_info(item)
+
+
+            elif state == self.c_state.interface_section.value:
+
+                pre_ch = ''
+                pre_2_ch = ''
+                next_ch = ''
+                next_2_ch = ''
+
+                if i < len(t_list):
+                    next_item = t_list[i]
+                    next_ch = str(next_item[1])
+
+                if (i + 1) < len(t_list):
+                    next_2_item = t_list[(i + 1)]
+                    next_2_ch = str(next_2_item[1])
+
+                if i > 1:
+                    pre_item = t_list[(i - 2)]
+                    pre_ch = str(pre_item[1])
+
+                if i > 2:
+                    pre_2_item = t_list[(i - 3)]
+                    pre_2_ch = str(pre_2_item[1])
+
+                prefix = ch[0:2]
+
+                if ch == '去AppStore打分':
+                    print('')
+
+                if pre_ch == '@' and ch == 'end':
+
+                    state = self.c_state.undefined_section.value
+                else:
+                    if prefix.isupper() \
+                            and ch[0].isalpha() \
+                            and not ch.isupper() \
+                            and prefix not in OC_SDK_PREFIX \
+                            and ch not in OC_KEYWORDS \
+                            and next_ch not in NEXT_IGNORE_LIST \
+                            and next_2_ch not in NEXT_2_IGNORE_LIST \
+                            and pre_ch not in PRE_IGNORE_LIST \
+                            and pre_2_ch not in PRE_2_IGNORE_LIST:
+
+                        if next_ch == ' ' and next_2_ch == '*':
+                            self.update_class_info(item)
+                        elif next_ch == '*':
+                            self.update_class_info(item)
+
+            elif state == self.c_state.implement_section.value:
+
+                pre_ch = ''
+                pre_2_ch = ''
+                next_ch = ''
+                next_2_ch = ''
+                next_3_ch = ''
+
+                if i < len(t_list):
+                    next_item = t_list[i]
+                    next_ch = str(next_item[1])
+
+                if (i + 1) < len(t_list):
+                    next_2_item = t_list[(i + 1)]
+                    next_2_ch = str(next_2_item[1])
+
+                if (i + 2) < len(t_list):
+                    next_3_item = t_list[(i + 2)]
+                    next_3_ch = str(next_3_item[1])
+
+                if i > 1:
+                    pre_item = t_list[(i - 2)]
+                    pre_ch = str(pre_item[1])
+
+                if i > 2:
+                    pre_2_item = t_list[(i - 3)]
+                    pre_2_ch = str(pre_2_item[1])
+                prefix = ch[0:2]
+
+                if ch == '去AppStore打分':
+                    print('')
+
+                if pre_ch == '@' and ch == 'end':
+
+                    state = self.c_state.undefined_section.value
+                else:
+                    if prefix.isupper() \
+                            and ch[0].isalpha() \
+                            and not ch.isupper() \
+                            and prefix not in OC_SDK_PREFIX \
+                            and ch not in OC_KEYWORDS \
+                            and next_ch not in NEXT_IGNORE_LIST \
+                            and next_2_ch not in NEXT_2_IGNORE_LIST \
+                            and pre_ch not in PRE_IGNORE_LIST \
+                            and pre_2_ch not in PRE_2_IGNORE_LIST:
+
+                        # self.update_class_info(item)
+                        if next_ch == ' ' and not next_2_ch[0].isalpha():
+                            self.update_class_info(item)
+                        elif next_ch == ' ' and next_2_ch[0].isalpha() and next_3_ch == ']':
+                            self.update_class_info(item)
+                        else:
+                            # if ch == 'WKInterfaceDevice':
+                            if ch not in self.class_need_check:
+                                self.class_need_check.append(ch)
 
     def update_class_info(self, item):
 
@@ -188,6 +312,12 @@ class OCClass:
 
         return t_list
 
+    def print_need_check_reference(self):
+
+        for item in self.class_need_check:
+            if item not in self.class_info.keys():
+                print(item)
+
 
 def main(argv):
     try:
@@ -224,16 +354,17 @@ def main(argv):
 
     oc_class.start_scan()
 
-    print('\n============== 疑似类申明 ==============\n')
+    print('\n============== 疑似类引用 ==============\n')
 
-    list = oc_class.get_reference()
-    content = sorted(list, key=lambda x: x[0])
+    t_list = oc_class.get_reference()
+    content = sorted(t_list, key=lambda x: x[0])
     for index, value in enumerate(content):
-        print(value[0])
-        # print((index, value[0], value[1]))
+        print((index, value[0], value[1]))
 
-    print('\n', len(content))
+    print('\n全部疑似引用类个数 : ' + str(len(content)))
     print('\n============== End ==============\n')
+
+    # oc_class.print_need_check_reference()
 
 
 if __name__ == '__main__':

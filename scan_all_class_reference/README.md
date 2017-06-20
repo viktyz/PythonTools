@@ -4,31 +4,17 @@
 
 ### 功能
 
-* 统计目录下全部 Objective-C 文件引用外部类
+* 统计目录下全部 Objective-C 文件全部疑似类引用
 
 ### 介绍
 
 * 遍历对应目录中下全部 .h .m 文件；
-* 识别 interface 与 implement 中；
-* 输出 output 结果文件，该文件夹下包含 class_reference.json 与 class_reference.index 两个文件，以便提供不同查阅方法。
+* 识别 interface 、 implement 、 protocol 中全部疑似类引用；
+* 输出全部类引用列表。
 
-```javascript
-[
-    {
-        "main": "classname",
-        "path": "path",
-        "sub": [
-            {
-                "name": "classname",
-                "type": "",
-                "position": ""
-            },
-            ...
-        ]
-    },
-    ...
-]
-```
+### 依赖
+
+* [la_oc_code.py](/../la_oc_code) : 简单的 Objective-C 代码文件词法分析器
 
 ### 使用
 
@@ -40,5 +26,4 @@ $ python scan_all_class_reference.py -i project_path
 -i <optional : input project path, default is current folder>
 ```
 
-![scan_all_files_in_project_1](Resource/scan_all_files_in_project_1.png)
-![scan_all_files_in_project_2](Resource/scan_all_files_in_project_2.png)
+![scan_all_class_reference](Resource/scan_all_class_reference.png)
