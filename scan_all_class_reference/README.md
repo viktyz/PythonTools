@@ -14,7 +14,7 @@
 
 ### 依赖
 
-* [la_oc_code.py](/../la_oc_code) : 简单的 Objective-C 代码文件词法分析器
+* [la_oc_code.py](https://github.com/viktyz/PythonTools/tree/master/la_oc_code) : 简单的 Objective-C 代码文件词法分析器
 
 ### 使用
 
