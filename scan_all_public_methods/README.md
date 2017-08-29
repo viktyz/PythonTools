@@ -1,6 +1,6 @@
 ### 名称
 
-* scan_class_name.py
+* scan_all_publish_methods.py
 
 ### 功能
 
@@ -18,9 +18,9 @@
 ```shell
 usage:
 
-$ python scan_class_name.py -i project_path
+$ python scan_all_publish_methods.py -i project_path
 
 -i <optional : input project path, default is current folder>
 ```
 
-![scan_class_name](Resource/scan_class_name.png)
+![scan_all_publish_methods](Resource/scan_all_publish_methods.png)
