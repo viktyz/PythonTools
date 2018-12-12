@@ -6,7 +6,8 @@ import getopt
 import os
 import sys
 
-ignore_dirs = ['.git', 'build', '.framework', '.bundle', '.xcodeproj']
+# ignore_dirs = ['.git', 'build', '.framework', '.bundle', '.xcodeproj','.xcassets']
+ignore_dirs = ['.git', 'build', '.bundle', '.xcodeproj','.xcassets']
 
 
 def need_ignore(file_path):
